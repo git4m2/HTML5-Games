@@ -1,0 +1,159 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"></head><body><canvas id="ctx" width="500" height="500" style="border:1px solid #000000;"></canvas>
+
+<script>
+    var ctx = document.getElementById("ctx").getContext("2d");
+
+    ctx.font = '30px Arial';
+    ctx.globalAlpha = 0.5;
+    ctx.fillStyle = 'blue';
+
+    var WIDTH = 500;
+    var HEIGHT = 500;
+    var REFRESH_RATE = 100;
+    var COLLISION_DISTANCE = 30;
+
+    var timeWhenGameStarted = Date.now(); // return time in ms
+
+    var playerList = {};
+    var enemyList = {};
+
+    // Player
+    var player = {
+        id:'P',
+        name:'P',
+        x:50,
+        y:40,
+        spdX:30,
+        spdY:5,
+        hp:10
+    };
+
+    /*
+    // Player
+    function Player(id,name,x,y,spdX,spdY) {
+        var playerObj = {
+            id:id,
+            name:name,
+            x:x,
+            y:y,
+            spdX:spdX,
+            spdY:spdY
+        };
+
+        playerList[playerObj.id] = playerObj;
+    }
+    */
+
+    // Enemy
+    Enemy = function (id,name,x,y,spdX,spdY) {
+        var enemyObj = {
+            id:id,
+            name:name,
+            x:x,
+            y:y,
+            spdX:spdX,
+            spdY:spdY
+        };
+
+        enemyList[enemyObj.id] = enemyObj;
+    }
+
+    document.onmousemove = function(mouse) {
+        var mouseX = mouse.clientX;
+        var mouseY = mouse.clientY;
+
+        player.x = mouseX;
+        player.y = mouseY;
+    }
+
+    updateEntity = function (objectEntity) {
+        updateEntityPosition(objectEntity);
+        drawEnemy(objectEntity);
+    }
+
+    updateEntityPosition = function (objectEntity) {
+        objectEntity.x += objectEntity.spdX;
+        objectEntity.y += objectEntity.spdY;
+
+        if (objectEntity.x < 0 || objectEntity.x > WIDTH) {
+            objectEntity.spdX = -objectEntity.spdX;
+        }
+                
+        if (objectEntity.y < 0 || objectEntity.y > HEIGHT) {
+            objectEntity.spdY = -objectEntity.spdY;
+        }
+    }
+
+    drawPlayer = function (objectEntity) {
+        ctx.save();
+        ctx.fillStyle = 'green';
+        //ctx.fillText(objectEntity.name,objectEntity.x,objectEntity.y);
+        //ctx.fillStyle = 'black';
+        ctx.fillRect(objectEntity.x-10,objectEntity.y-10,20,20);
+        ctx.restore();
+    }
+
+    drawEnemy = function (objectEntity) {
+        ctx.save();
+        ctx.fillStyle = 'red';
+        //ctx.fillText(objectEntity.name,objectEntity.x,objectEntity.y);
+        ctx.fillRect(objectEntity.x-15,objectEntity.y-15,30,30);
+        ctx.restore();
+    }
+
+    update = function () {
+        ctx.clearRect(0,0,WIDTH,HEIGHT);
+
+        for(var key in enemyList) {
+            updateEntity(enemyList[key]);
+
+            var isColliding = testCollisionBetweenEntities(player,enemyList[key]);
+            if(isColliding) {
+                //console.log('Colliding!');
+                player.hp--;
+
+                if(player.hp <= 0) {
+                    var timeSurvived = Date.now() - timeWhenGameStarted;
+
+                    console.log("You lost! You survived for " + timeSurvived + " ms.");
+                    timeWhenGameStarted = Date.now();
+                    player.hp = 10;
+                }
+                //break();
+            }
+        }
+
+        //updateEntity(player);
+        drawPlayer(player);
+        ctx.fillText(player.hp + " HP",0,30);
+
+        /*
+        for(var key in playerList) {
+            updateEntity(playerList[key]);
+        }
+        */
+    }
+
+    getDistanceBetweenEntities = function (entity1,entity2) {
+        var dx = entity1.x - entity2.x;
+        var dy = entity1.y - entity2.y;
+        var result = Math.sqrt(dx*dx+dy*dy);
+        return result;
+    }
+
+    testCollisionBetweenEntities = function (entity1,entity2) {
+        var distance = getDistanceBetweenEntities(entity1,entity2);
+        var result = distance < COLLISION_DISTANCE;
+        return result;
+    }
+
+    //Player('P1','Player1',50,40,30,5);
+                                                    
+    Enemy('E1','Jack',150,350,10,5);
+    Enemy('E2','Jeremy',250,350,10,-15);
+    Enemy('E3','Kiah',350,350,10,-30);
+
+    setInterval(update,REFRESH_RATE);
+
+</script>
+</body></html>
