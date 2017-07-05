@@ -121,19 +121,28 @@
             var isColliding = testCollisionEntity(player,enemyList[key]);
             if(isColliding) {
                 player.hp--;
-
-                if(player.hp <= 0) {
-                    var timeSurvived = Date.now() - timeWhenGameStarted;
-
-                    console.log("You lost! You survived for " + timeSurvived + " ms.");
-                    timeWhenGameStarted = Date.now();
-                    player.hp = 10;
-                }
             }
+        }
+
+        if(player.hp <= 0) {
+            var timeSurvived = Date.now() - timeWhenGameStarted;
+            console.log("You lost! You survived for " + timeSurvived + " ms.");
+            startNewGame();
         }
 
         drawEntity(player);
         ctx.fillText(player.hp + " HP",0,30);
+    }
+
+    startNewGame = function() {
+        player.hp = 10;
+        timeWhenGameStarted = Date.now();
+        frameCount = 0;
+        enemyList = {};
+
+        randomlyGenerateEnemy();
+        randomlyGenerateEnemy();
+        randomlyGenerateEnemy();
     }
 
     getDistanceBetweenEntity = function (entity1,entity2) {
@@ -179,9 +188,7 @@
     //Enemy('E2','Jeremy',250,350,10,-15,20,20);
     //Enemy('E3','Kiah',350,350,10,-30,40,10);
 
-    randomlyGenerateEnemy();
-    randomlyGenerateEnemy();
-    randomlyGenerateEnemy();
+    startNewGame();
 
     setInterval(update,REFRESH_RATE);
 
