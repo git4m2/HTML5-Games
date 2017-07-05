@@ -154,10 +154,27 @@
         result = testCollisionRectRect(rect1,rect2);
         return result;
     }
+
+    randomlyGenerateEnemy = function() {
+        // Math.random() - Generates a random number bewteen 0-10
+        var x = Math.random() * WIDTH;
+        var y = Math.random() * HEIGHT;
+        var height = 10 + Math.random() * 30;
+        var width = 10 + Math.random() * 30;
+        var id = Math.random();
+        var spdX = 5 + Math.random() * 5;
+        var spdY = 5 + Math.random() * 5;
+
+        Enemy(id,id,x,y,spdX,spdY,width,height);
+    }
                                                     
-    Enemy('E1','Jack',150,350,10,5,30,30);
-    Enemy('E2','Jeremy',250,350,10,-15,20,20);
-    Enemy('E3','Kiah',350,350,10,-30,40,10);
+    //Enemy('E1','Jack',150,350,10,5,30,30);
+    //Enemy('E2','Jeremy',250,350,10,-15,20,20);
+    //Enemy('E3','Kiah',350,350,10,-30,40,10);
+
+    randomlyGenerateEnemy();
+    randomlyGenerateEnemy();
+    randomlyGenerateEnemy();
 
     setInterval(update,REFRESH_RATE);
 
