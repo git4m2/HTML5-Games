@@ -54,9 +54,20 @@
     }
 
     document.onmousemove = function(mouse) {
-        var mouseX = mouse.clientX;
-        var mouseY = mouse.clientY;
+        //var mouseX = mouse.clientX - 8;
+        //var mouseY = mouse.clientY - 8;
+        var mouseX = mouse.clientX - document.getElementById('ctx').getBoundingClientRect().left;
+        var mouseY = mouse.clientY - document.getElementById('ctx').getBoundingClientRect().top;
 
+        if(mouseX < player.width/2)
+            mouseX = player.width/2;
+        if(mouseX > WIDTH - player.width/2)
+            mouseX = WIDTH - player.width/2;
+        if(mouseY < player.height/2)
+            mouseY = player.height/2;
+        if(mouseY > HEIGHT - player.height/2)
+            mouseY = HEIGHT - player.height/2;
+        
         player.x = mouseX;
         player.y = mouseY;
     }
