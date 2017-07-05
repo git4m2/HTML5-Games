@@ -1,6 +1,12 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"></head><body><canvas id="ctx" width="500" height="500" style="border:1px solid #000000;"></canvas>
+<html>
+<head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"></head>
+<body>
+<canvas id="ctx" width="500" height="500" style="border:1px solid #000000;"></canvas>
 
 <script>
+    // Making HTML5 Game
+    // https://www.youtube.com/user/RainingChain/videos?flow=list&live_view=500&sort=da&view=0
+
     var ctx = document.getElementById("ctx").getContext("2d");
 
     ctx.font = '30px Arial';
@@ -24,18 +30,24 @@
         y:40,
         spdX:30,
         spdY:5,
-        hp:10
+        hp:10,
+        width:20,
+        height:20,
+        color:'green'
     };
 
     // Enemy
-    Enemy = function (id,name,x,y,spdX,spdY) {
+    Enemy = function (id,name,x,y,spdX,spdY,width,height) {
         var enemyObj = {
             id:id,
             name:name,
             x:x,
             y:y,
             spdX:spdX,
-            spdY:spdY
+            spdY:spdY,
+            width:width,
+            height:height,
+            color:'red'
         };
 
         enemyList[enemyObj.id] = enemyObj;
@@ -51,7 +63,7 @@
 
     updateEntity = function (something) {
         updateEntityPosition(something);
-        drawEnemy(something);
+        drawEntity(something);
     }
 
     updateEntityPosition = function (something) {
@@ -67,19 +79,20 @@
         }
     }
 
-    drawPlayer = function (something) {
+    testCollisionRectRect = function(rect1,rect2) {
+        return rect1.x <= rect2.x + rect2.width
+            && rect2.x <= rect1.x + rect1.width
+            && rect1.y <= rect2.y + rect2.height
+            && rect2.y <= rect1.y + rect1.height;
+    }
+
+    drawEntity = function (something) {
         ctx.save();
-        ctx.fillStyle = 'green';
-        ctx.fillRect(something.x-10,something.y-10,20,20);
+        ctx.fillStyle = something.color;
+        ctx.fillRect(something.x-something.width/2,something.y-something.height/2,something.width,something.height);
         ctx.restore();
     }
 
-    drawEnemy = function (something) {
-        ctx.save();
-        ctx.fillStyle = 'red';
-        ctx.fillRect(something.x-15,something.y-15,30,30);
-        ctx.restore();
-    }
 
     update = function () {
         ctx.clearRect(0,0,WIDTH,HEIGHT);
@@ -87,7 +100,7 @@
         for(var key in enemyList) {
             updateEntity(enemyList[key]);
 
-            var isColliding = testCollisionBetweenEntities(player,enemyList[key]);
+            var isColliding = testCollisionEntity(player,enemyList[key]);
             if(isColliding) {
                 player.hp--;
 
@@ -101,26 +114,39 @@
             }
         }
 
-        drawPlayer(player);
+        drawEntity(player);
         ctx.fillText(player.hp + " HP",0,30);
     }
 
-    getDistanceBetweenEntities = function (entity1,entity2) {
+    getDistanceBetweenEntity = function (entity1,entity2) {
         var dx = entity1.x - entity2.x;
         var dy = entity1.y - entity2.y;
         var result = Math.sqrt(dx*dx+dy*dy);
         return result;
     }
 
-    testCollisionBetweenEntities = function (entity1,entity2) {
-        var distance = getDistanceBetweenEntities(entity1,entity2);
-        var result = distance < COLLISION_DISTANCE;
+    testCollisionEntity = function (entity1,entity2) {
+        var rect1 = {
+            x:entity1.x-entity1.width/2,
+            y:entity1.y-entity1.height/2,
+            width:entity1.width,
+            height:entity1.height
+        }
+        
+        var rect2 = {
+            x:entity2.x-entity2.width/2,
+            y:entity2.y-entity2.height/2,
+            width:entity2.width,
+            height:entity2.height
+        }
+
+        result = testCollisionRectRect(rect1,rect2);
         return result;
     }
                                                     
-    Enemy('E1','Jack',150,350,10,5);
-    Enemy('E2','Jeremy',250,350,10,-15);
-    Enemy('E3','Kiah',350,350,10,-30);
+    Enemy('E1','Jack',150,350,10,5,30,30);
+    Enemy('E2','Jeremy',250,350,10,-15,20,20);
+    Enemy('E3','Kiah',350,350,10,-30,40,10);
 
     setInterval(update,REFRESH_RATE);
 
