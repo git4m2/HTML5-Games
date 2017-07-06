@@ -25,6 +25,7 @@
 
     var enemyList = {};
     var upgradeList = {};
+    var bulletList = {};
 
     // Player
     var player = {
@@ -100,6 +101,40 @@
         Upgrade(id,id,x,y,spdX,spdY,width,height);
     }
 
+    // Bullet
+    Bullet = function (id,name,x,y,spdX,spdY,width,height) {
+        var asd = {
+            id:id,
+            name:name,
+            x:x,
+            y:y,
+            spdX:spdX,
+            spdY:spdY,
+            width:width,
+            height:height,
+            color:'black'
+        };
+
+        bulletList[id] = asd;
+    }
+
+    randomlyGenerateBullet = function() {
+        // Math.random() - Generates a random number bewteen 0-10
+        var x = player.x;
+        var y = player.y;
+        var height = 10;
+        var width = 10;
+        var id = Math.random();
+
+        var angle = Math.random() * 360;
+        //var spdX = Math.cos(angle) * 5; // Where 'angle' is in radians
+        //var spdY = Math.sin(angle) * 5; // Where 'angle' is in radians
+        var spdX = Math.cos(angle/180 * Math.PI) * 5; // Where 'angle' is in degrees
+        var spdY = Math.sin(angle/180 * Math.PI) * 5; // Where 'angle' is in degrees
+
+        Bullet(id,id,x,y,spdX,spdY,width,height);
+    }
+
     document.onmousemove = function(mouse) {
         //var mouseX = mouse.clientX - 8;
         //var mouseY = mouse.clientY - 8;
@@ -164,6 +199,13 @@
         if(frameCount % 75 === 0) // every 3 sec
             randomlyGenerateUpgrade();
 
+        if(frameCount % 25 === 0) // every 1 sec
+            randomlyGenerateBullet();
+
+        for(var key in bulletList) {
+            updateEntity(bulletList[key]);
+        }
+        
         for(var key in upgradeList) {
             updateEntity(upgradeList[key]);
 
