@@ -127,10 +127,10 @@
         var id = Math.random();
 
         var angle = Math.random() * 360;
-        //var spdX = Math.cos(angle) * 5; // Where 'angle' is in radians
-        //var spdY = Math.sin(angle) * 5; // Where 'angle' is in radians
-        var spdX = Math.cos(angle/180 * Math.PI) * 5; // Where 'angle' is in degrees
-        var spdY = Math.sin(angle/180 * Math.PI) * 5; // Where 'angle' is in degrees
+        //var spdX = Math.cos(angle) * 5; // Angle is in radians
+        //var spdY = Math.sin(angle) * 5; // Angle is in radians
+        var spdX = Math.cos(angle/180 * Math.PI) * 5; // Angle is in degrees
+        var spdY = Math.sin(angle/180 * Math.PI) * 5; // Angle is in degrees
 
         Bullet(id,id,x,y,spdX,spdY,width,height);
     }
@@ -193,19 +193,33 @@
         frameCount++;
         score++;
 
+        // Enemies
         if(frameCount % 100 === 0) // every 4 sec
             randomlyGenerateEnemy();
 
+        // Bonus objects
         if(frameCount % 75 === 0) // every 3 sec
             randomlyGenerateUpgrade();
 
+        // Bullets
         if(frameCount % 25 === 0) // every 1 sec
             randomlyGenerateBullet();
 
+        // Loop thru all bullets
         for(var key in bulletList) {
             updateEntity(bulletList[key]);
+
+            for(var key2 in enemyList) {
+                var isColliding = testCollisionEntity(bulletList[key],enemyList[key2]);
+                if(isColliding) {
+                    delete bulletList[key];
+                    delete enemyList[key2];
+                    break;
+                }
+            }
         }
-        
+
+        // Loop thru all bonus objects
         for(var key in upgradeList) {
             updateEntity(upgradeList[key]);
 
@@ -216,6 +230,7 @@
             }
         }
 
+        // Loop thru all enemies
         for(var key in enemyList) {
             updateEntity(enemyList[key]);
 
@@ -269,6 +284,7 @@
         score = 0;
         enemyList = {};
         upgradeList = {};
+        bulletList = {};
 
         randomlyGenerateEnemy();
         randomlyGenerateEnemy();
