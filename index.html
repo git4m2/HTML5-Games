@@ -72,7 +72,7 @@
     }
 
     // Upgrade
-    Upgrade = function (id,name,x,y,spdX,spdY,width,height) {
+    Upgrade = function (id,name,x,y,spdX,spdY,width,height,category) {
         var upgrade = {
             id:id,
             name:name,
@@ -82,7 +82,8 @@
             spdY:spdY,
             width:width,
             height:height,
-            color:'orange'
+            color:'orange',
+            category
         };
 
         upgradeList[id] = upgrade;
@@ -98,7 +99,13 @@
         var spdX = 0;
         var spdY = 0;
 
-        Upgrade(id,id,x,y,spdX,spdY,width,height);
+        if(Math.random() < 0.5){
+            var category = 'low';
+        } else {
+            var category = 'high';
+        }
+
+        Upgrade(id,id,x,y,spdX,spdY,width,height,category);
     }
 
     // Bullet
@@ -234,10 +241,12 @@
         // Loop thru all bonus objects
         for(var key in upgradeList) {
             updateEntity(upgradeList[key]);
-
             var isColliding = testCollisionEntity(player,upgradeList[key]);
             if(isColliding) {
-                score += 1000;
+                if(upgradeList[key].category === 'low')
+                    score += 1000;
+                if(upgradeList[key].category === 'high')
+                    score += 10000;
                 delete upgradeList[key];
             }
         }
@@ -245,7 +254,6 @@
         // Loop thru all enemies
         for(var key in enemyList) {
             updateEntity(enemyList[key]);
-
             var isColliding = testCollisionEntity(player,enemyList[key]);
             if(isColliding) {
                 player.hp--;
