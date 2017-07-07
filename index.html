@@ -112,7 +112,9 @@
             spdY:spdY,
             width:width,
             height:height,
-            color:'black'
+            color:'black',
+            //
+            timer:10
         };
 
         bulletList[id] = asd;
@@ -209,13 +211,23 @@
         for(var key in bulletList) {
             updateEntity(bulletList[key]);
 
+            var toRemove = false;
+            bulletList[key].timer++;
+            if(bulletList[key].timer > 100) {
+                toRemove = true;
+            }
+
             for(var key2 in enemyList) {
                 var isColliding = testCollisionEntity(bulletList[key],enemyList[key2]);
                 if(isColliding) {
-                    delete bulletList[key];
+                    toRemove = true;
                     delete enemyList[key2];
                     break;
                 }
+            }
+
+            if(toRemove) {
+                delete bulletList[key];
             }
         }
 
