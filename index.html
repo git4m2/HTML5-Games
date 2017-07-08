@@ -38,7 +38,9 @@
         hp:10,
         width:20,
         height:20,
-        color:'green'
+        color:'green',
+        //
+        atkSpd:5
     };
 
     // Enemy
@@ -214,7 +216,7 @@
             randomlyGenerateUpgrade();
 
         // Bullets
-        if(frameCount % 25 === 0) // every 1 sec
+        if(frameCount % Math.round(25/player.atkSpd) === 0) // every 1 sec
             randomlyGenerateBullet();
 
         // Loop thru all bullets
