@@ -72,8 +72,8 @@
     }
 
     // Upgrade
-    Upgrade = function (id,name,x,y,spdX,spdY,width,height,category) {
-        var upgrade = {
+    Upgrade = function (id,name,x,y,spdX,spdY,width,height,category,color) {
+        var asd = {
             id:id,
             name:name,
             x:x,
@@ -82,11 +82,12 @@
             spdY:spdY,
             width:width,
             height:height,
-            color:'orange',
-            category
+            color:color,
+            //
+            category:category
         };
 
-        upgradeList[id] = upgrade;
+        upgradeList[id] = asd;
     }
 
     randomlyGenerateUpgrade = function() {
@@ -101,11 +102,13 @@
 
         if(Math.random() < 0.5){
             var category = 'low';
+            var color = 'orange';
         } else {
             var category = 'high';
+            var color = 'purple';
         }
 
-        Upgrade(id,id,x,y,spdX,spdY,width,height,category);
+        Upgrade(id,id,x,y,spdX,spdY,width,height,category,color);
     }
 
     // Bullet
