@@ -45,7 +45,8 @@ var player = {
     pressingDown:false,
     pressingUp:false,
     pressingLeft:false,
-    pressingRight:false
+    pressingRight:false,
+    aimAngle:0
 };
 
 // Enemy
@@ -145,7 +146,7 @@ randomlyGenerateBullet = function(){
     var width = 10;
     var id = Math.random();
 
-    var angle = Math.random() * 360;
+    var angle = player.aimAngle;
     //var spdX = Math.cos(angle) * 5; // Angle is in radians
     //var spdY = Math.sin(angle) * 5; // Angle is in radians
     var spdX = Math.cos(angle/180 * Math.PI) * 5; // Angle is in degrees
@@ -163,24 +164,17 @@ document.onclick = function(mouse){
 }
 
 document.onmousemove = function(mouse){
-    /*
     //var mouseX = mouse.clientX - 8;
     //var mouseY = mouse.clientY - 8;
     var mouseX = mouse.clientX - document.getElementById('ctx').getBoundingClientRect().left;
     var mouseY = mouse.clientY - document.getElementById('ctx').getBoundingClientRect().top;
 
-    if(mouseX < player.width/2)
-        mouseX = player.width/2;
-    if(mouseX > WIDTH - player.width/2)
-        mouseX = WIDTH - player.width/2;
-    if(mouseY < player.height/2)
-        mouseY = player.height/2;
-    if(mouseY > HEIGHT - player.height/2)
-        mouseY = HEIGHT - player.height/2;
+    mouseX -= player.x;
+    mouseY -= player.y;
 
-    player.x = mouseX;
-    player.y = mouseY;
-    */
+    //player.aimAngle = Math.atan2(mouseX,mouseY); //radians
+    player.aimAngle = Math.atan2(mouseY,mouseX) / Math.PI * 180; //degrees
+
 }
 
 //event.keyCode
