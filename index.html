@@ -60,7 +60,9 @@ Enemy = function (id,name,x,y,spdX,spdY,width,height){
         spdY:spdY,
         width:width,
         height:height,
-        color:'red'
+        color:'red',
+        //
+        aimAngle:0
     };
 
     enemyList[id] = enemy;
@@ -138,15 +140,20 @@ Bullet = function (id,name,x,y,spdX,spdY,width,height){
     bulletList[id] = asd;
 }
 
-randomlyGenerateBullet = function(){
+randomlyGenerateBullet = function(actor,overwriteAngle){
     // Math.random() - Generates a random number bewteen 0-10
-    var x = player.x;
-    var y = player.y;
+    var x = actor.x;
+    var y = actor.y;
     var height = 10;
     var width = 10;
     var id = Math.random();
 
-    var angle = player.aimAngle;
+    var angle = actor.aimAngle;
+
+    if(overwriteAngle !== undefined){ //overwriteAngle is optional
+        angle = overwriteAngle;
+    }
+
     //var spdX = Math.cos(angle) * 5; // Angle is in radians
     //var spdY = Math.sin(angle) * 5; // Angle is in radians
     var spdX = Math.cos(angle/180 * Math.PI) * 5; // Angle is in degrees
@@ -155,10 +162,21 @@ randomlyGenerateBullet = function(){
     Bullet(id,id,x,y,spdX,spdY,width,height);
 }
 
-document.onclick = function(mouse){
+document.onclick = function(mouse){ //left-click mouse
     // Bullets
     if(player.attackCounter > 25){ // every 1 sec
-        randomlyGenerateBullet();
+        randomlyGenerateBullet(player);
+        player.attackCounter = 0;
+    }
+}
+
+document.oncontextmenu = function(mouse){ //right-click mouse
+    // Bullets
+    if(player.attackCounter > 50){ // every 2 sec
+        randomlyGenerateBullet(player,player.aimAngle - 5);
+        randomlyGenerateBullet(player,player.aimAngle);
+        randomlyGenerateBullet(player,player.aimAngle + 5);
+        
         player.attackCounter = 0;
     }
 }
