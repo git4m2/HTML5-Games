@@ -173,12 +173,13 @@ document.onclick = function(mouse){ //left-click mouse
 document.oncontextmenu = function(mouse){ //right-click mouse
     // Bullets
     if(player.attackCounter > 50){ // every 2 sec
-        randomlyGenerateBullet(player,player.aimAngle - 5);
-        randomlyGenerateBullet(player,player.aimAngle);
-        randomlyGenerateBullet(player,player.aimAngle + 5);
-        
+        for(var angle=0;angle < 360;angle++){
+            randomlyGenerateBullet(player,angle);
+        }
+
         player.attackCounter = 0;
     }
+    mouse.preventDefault(); //stops display of context menu
 }
 
 document.onmousemove = function(mouse){
