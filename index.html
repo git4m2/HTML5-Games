@@ -22,36 +22,42 @@ var timeWhenGameStarted = Date.now(); // return time in ms
 var frameCount = 0; // ex. Video = 1000/40 = 25fps
 
 var score = 0;
+var player;
 
 var enemyList = {};
 var upgradeList = {};
 var bulletList = {};
 
+
 // Player
-var player = {
-    id:'P',
-    name:'P',
-    x:50,
-    y:40,
-    spdX:30,
-    spdY:5,
-    hp:10,
-    width:20,
-    height:20,
-    color:'green',
-    //
-    atkSpd:1,
-    attackCounter:0,
-    pressingDown:false,
-    pressingUp:false,
-    pressingLeft:false,
-    pressingRight:false,
-    aimAngle:0
-};
+createPlayer = function(){
+    player = {
+        type:'player',
+        id:'P',
+        name:'P',
+        x:50,
+        y:40,
+        spdX:30,
+        spdY:5,
+        hp:10,
+        width:20,
+        height:20,
+        color:'green',
+        //
+        atkSpd:1,
+        attackCounter:0,
+        pressingDown:false,
+        pressingUp:false,
+        pressingLeft:false,
+        pressingRight:false,
+        aimAngle:0
+    };
+}
 
 // Enemy
-Enemy = function (id,name,x,y,spdX,spdY,width,height){
+Enemy = function(id,name,x,y,spdX,spdY,width,height){
     var enemy = {
+        type:'enemy',
         id:id,
         name:name,
         x:x,
@@ -62,7 +68,9 @@ Enemy = function (id,name,x,y,spdX,spdY,width,height){
         height:height,
         color:'red',
         //
-        aimAngle:0
+        aimAngle:0,
+        atkSpd:1,
+        attackCounter:0
     };
 
     enemyList[id] = enemy;
@@ -84,6 +92,7 @@ randomlyGenerateEnemy = function(){
 // Upgrade
 Upgrade = function (id,name,x,y,spdX,spdY,width,height,category,color){
     var asd = {
+        type:'upgrade',
         id:id,
         name:name,
         x:x,
@@ -124,6 +133,7 @@ randomlyGenerateUpgrade = function(){
 // Bullet
 Bullet = function (id,name,x,y,spdX,spdY,width,height){
     var asd = {
+        type:'bullet',
         id:id,
         name:name,
         x:x,
@@ -140,7 +150,7 @@ Bullet = function (id,name,x,y,spdX,spdY,width,height){
     bulletList[id] = asd;
 }
 
-randomlyGenerateBullet = function(actor,overwriteAngle){
+GenerateBullet = function(actor,overwriteAngle){
     // Math.random() - Generates a random number bewteen 0-10
     var x = actor.x;
     var y = actor.y;
@@ -163,23 +173,35 @@ randomlyGenerateBullet = function(actor,overwriteAngle){
 }
 
 document.onclick = function(mouse){ //left-click mouse
+    performAttack(player);
+}
+
+performAttack = function(actor){
     // Bullets
-    if(player.attackCounter > 25){ // every 1 sec
-        randomlyGenerateBullet(player);
-        player.attackCounter = 0;
-    }
+    if(actor.attackCounter > 25){ // every 1 sec
+        actor.attackCounter = 0;
+        GenerateBullet(actor);
+    }    
 }
 
 document.oncontextmenu = function(mouse){ //right-click mouse
-    // Bullets
-    if(player.attackCounter > 50){ // every 2 sec
-        for(var angle=0;angle < 360;angle++){
-            randomlyGenerateBullet(player,angle);
-        }
-
-        player.attackCounter = 0;
-    }
+    performSpecialAttack(player);
     mouse.preventDefault(); //stops display of context menu
+}
+
+performSpecialAttack = function(actor){
+    // Bullets
+    if(actor.attackCounter > 50){ // every 2 sec
+        actor.attackCounter = 0;
+        /*
+        for(var angle=0;angle < 360;angle++){
+            GenerateBullet(actor,angle);
+        }
+        */
+        GenerateBullet(actor,actor.aimAngle - 5);
+        GenerateBullet(actor,actor.aimAngle);
+        GenerateBullet(actor,actor.aimAngle + 5);
+    }
 }
 
 document.onmousemove = function(mouse){
@@ -221,42 +243,42 @@ document.onkeyup = function(event){
         player.pressingUp = false;
 }
 
-updatePlayerPosition = function(){
-    if(player.pressingRight)
-        player.x += 10;
-    if(player.pressingLeft)
-        player.x -= 10;
-    if(player.pressingDown)
-        player.y += 10;
-    if(player.pressingUp)
-        player.y -= 10;
-
-    //ispositionvalid
-    if(player.x < player.width/2)
-        player.x = player.width/2;
-    if(player.x > WIDTH - player.width/2)
-        player.x = WIDTH - player.width/2;
-    if(player.y < player.height/2)
-        player.y = player.height/2;
-    if(player.y > HEIGHT - player.height/2)
-        player.y = HEIGHT - player.height/2;
+updateEntity = function (entity){
+    updateEntityPosition(entity);
+    drawEntity(entity);
 }
 
-updateEntity = function (something){
-    updateEntityPosition(something);
-    drawEntity(something);
-}
+updateEntityPosition = function (entity){
+    if(entity.type === 'player'){
+        if(player.pressingRight)
+            player.x += 10;
+        if(player.pressingLeft)
+            player.x -= 10;
+        if(player.pressingDown)
+            player.y += 10;
+        if(player.pressingUp)
+            player.y -= 10;
 
-updateEntityPosition = function (something){
-    something.x += something.spdX;
-    something.y += something.spdY;
+        //ispositionvalid
+        if(player.x < player.width/2)
+            player.x = player.width/2;
+        if(player.x > WIDTH - player.width/2)
+            player.x = WIDTH - player.width/2;
+        if(player.y < player.height/2)
+            player.y = player.height/2;
+        if(player.y > HEIGHT - player.height/2)
+            player.y = HEIGHT - player.height/2;
+    } else {
+        entity.x += entity.spdX;
+        entity.y += entity.spdY;
 
-    if (something.x < 0 || something.x > WIDTH){
-        something.spdX = -something.spdX;
-    }
+        if (entity.x < 0 || entity.x > WIDTH){
+            entity.spdX = -entity.spdX;
+        }
 
-    if (something.y < 0 || something.y > HEIGHT){
-        something.spdY = -something.spdY;
+        if (entity.y < 0 || entity.y > HEIGHT){
+            entity.spdY = -entity.spdY;
+        }
     }
 }
 
@@ -267,10 +289,10 @@ testCollisionRectRect = function(rect1,rect2){
         && rect2.y <= rect1.y + rect1.height;
 }
 
-drawEntity = function (something){
+drawEntity = function (entity){
     ctx.save();
-    ctx.fillStyle = something.color;
-    ctx.fillRect(something.x-something.width/2,something.y-something.height/2,something.width,something.height);
+    ctx.fillStyle = entity.color;
+    ctx.fillRect(entity.x-entity.width/2,entity.y-entity.height/2,entity.width,entity.height);
     ctx.restore();
 }
 
@@ -342,8 +364,7 @@ update = function (){
         startNewGame();
     }
 
-    updatePlayerPosition();
-    drawEntity(player);
+    updateEntity(player);
     ctx.fillText(player.hp + " HP",0,30);
     ctx.fillText('Score: ' + score,200,30);
 }
@@ -392,6 +413,7 @@ startNewGame = function(){
 //Enemy('E2','Jeremy',250,350,10,-15,20,20);
 //Enemy('E3','Kiah',350,350,10,-30,40,10);
 
+createPlayer();
 startNewGame();
 
 setInterval(update,REFRESH_RATE);
